@@ -12,19 +12,22 @@ and open the template in the editor.
         <script src="plugin/jquery.getvals_plugin.js"></script>
         <script>
             $(function(){
-                //$(".ts2").setValues("2");
-                $("textarea").getValues();
+                var colec = [{id: 'dato1', text: 'description 1'}, {id: 'dato2', text: 'description 2'}];
+                $("select").createTagOption({collection: colec, val: 'id', description: 'text', selection: 'dato1', clear: true})
+                //$(".ts2").setValues("other");
+                //console.log($("textarea").getValues());
                 //$("#select2").setValues(2);
                 //$(".ts3").setValues();
                 //$(".ts2").setValues("14:58");
                 //$("").setValues();
+                
             });
         </script>
     </head>
     <body>
         <p>hola mundo</p>
-        <textarea name="" id="a1" cols="30" rows="10" class="ts2"></textarea>
-        <textarea name="" id="a2" cols="30" rows="10" class="ts2"></textarea>
+        <textarea name="" id="a1" cols="30" rows="10" class="ts2">text 1</textarea>
+        <textarea name="" id="a2" cols="30" rows="10" class="ts2">text 2</textarea>
         <input type="text" class="ts2" name="txt1">
         <input type="password" class="ts2" name="txt1">
         <input type="date" class="ts2" name="txt1">
