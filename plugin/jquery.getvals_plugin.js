@@ -12,20 +12,24 @@
                     val = '';
                 }
                 if(typeof values == 'object'){
-                    var id = elem.attr('id');
-                    var name = elem.attr('name');
-                    var colum;
-                    if(id != undefined && name == undefined){
-                        colum = id;
-                    }else if(id == undefined && name != undefined){
-                        colum = name;
-                    }else if(id != undefined && name != undefined){
-                        colum = id;
-                    }else if(id == undefined && name == undefined){
-                        colum = "";
-                    }
-                    if(values.hasOwnProperty(colum)){
-                        val = values[colum];
+                    if (Object.prototype.toString.call(values) === '[object Array]') {
+                        val = values;
+                    }else{
+                        var id = elem.attr('id');
+                        var name = elem.attr('name');
+                        var colum;
+                        if(id != undefined && name == undefined){
+                            colum = id;
+                        }else if(id == undefined && name != undefined){
+                            colum = name;
+                        }else if(id != undefined && name != undefined){
+                            colum = id;
+                        }else if(id == undefined && name == undefined){
+                            colum = "";
+                        }
+                        if(values.hasOwnProperty(colum)){
+                            val = values[colum];
+                        }
                     }
                 }else{
                     val = values;
@@ -56,6 +60,8 @@
         getValues: function(option){
             var json = "";
             var valArray = [];
+            var chk = 1;
+            var radios = {};
             this.each(function(i){
                 var val;
                 var tagName = this.tagName;
@@ -68,7 +74,13 @@
                 if(id != undefined && name == undefined){
                     colum = id;
                 }else if(id == undefined && name != undefined){
-                    colum = name;
+                    // check if the tag is a array
+                    var expreg = /\[\]$/;
+                    if (expreg.test(name)){
+                        colum = tagType+chk++;    
+                    }else{
+                        colum = name;
+                    }
                 }else if(id != undefined && name != undefined){
                     colum = id;
                 }else if(id == undefined && name == undefined){
@@ -89,16 +101,39 @@
                         if(elem.prop('checked')){
                             valArray.push(elem.val());  
                             json += "'"+colum + "':'" + elem.val() + "',";
+                        }else{
+                            valArray.push(null);  
+                            json += "'"+colum + "':" + null + ",";
                         }
                     }else if (tagType == 'radio') {
                         if(elem.prop('checked')){
                             valArray.push(elem.val());    
                             json += "'"+colum + "':'" + elem.val() + "',";
+                        }else{
+                            if(elem.parent().find("input[type=radio][name="+name+"]:checked").length){
+                              json += "'"+colum + "':'" +elem.parent().find("input[type=radio][name="+name+"]:checked").val() + "',";  
+                            }else{
+                                json += "'"+colum + "':" + null + ",";  
+                                if(!radios.hasOwnProperty(name)){
+                                    radios[name] = i;
+                                    valArray.push(null);    
+                                }
+                            }
                         }
                     }
                 }else if(tagName == 'SELECT'){
-                    valArray.push(elem.val());  
-                    json += "'"+colum + "':'" + elem.val() + "',";
+                    if(tagType == 'select-one'){
+                        valArray.push(elem.val());
+                        json += "'"+colum + "':'" + elem.val() + "',";
+                    }else if(tagType == 'select-multiple'){
+                        valArray.push(elem.val());
+                        if(elem.val() == null){
+                            json += "'"+colum + "':" + elem.val() + ",";
+                        }else{
+                            json += "'"+colum + "':[" + elem.val() + "],";
+                        }
+                    }
+                    
                 }
             });
 
